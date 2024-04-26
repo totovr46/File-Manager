@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, session
 import os
 import psutil
-import time  # Aggiunto questo import
+import time 
 
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'  # Chiave segreta per la sessione
+app.secret_key = 'supersecretkey'
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -90,8 +90,6 @@ def upload_file():
             upload_path = os.path.join(app.config['UPLOAD_FOLDER'], request.form['path'], filename)
             file.save(upload_path)
     return redirect(url_for('file_browser', path=request.form['path']))
-
-
 
 @app.route('/download/<path:filename>', methods=['GET'])
 def download_file(filename):
