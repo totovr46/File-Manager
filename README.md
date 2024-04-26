@@ -1,7 +1,7 @@
 EN:
 A simple browser-based file manager program that allows you to upload files,
 download them, delete them, create folders and navigate within them. 
-There is also a simple task manager program that can be reached at the address "http://iltuoip:5000/monitor", 
+There is also a simple task manager program that can be reached at the address "http://yourip:5000/monitor", 
 which, however, requires the installation of psutil with "pip install psutil" inserted in the command prompt before it can be used. 
 To use the file manager just download the entire folder, install flask with "pip install flask"
 with the same procedure as "psutil" and open the "server.py" file. Before running the Python code, 
