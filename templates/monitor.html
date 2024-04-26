@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container {
+            margin-top: 50px;
+        }
+        body { 
+            background-color: #023059;
+        }
+        h1 {
+            font-family:  system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            color: azure;
+            font-size: 80px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Aggiungi le seguenti regole CSS per personalizzare il colore delle card */
+        .custom-card {
+            background-color: #cae4ff; /* Cambia questo colore con quello desiderato */
+        }
+        @media (max-width: 767.98px) {
+            h1 {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            color: azure;
+            font-size: 50px;
+            text-align: center;
+            margin: 20px 0;
+        }
+            .custom-card {
+                margin-top: 20px; 
+                margin-bottom: 1px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Task Manager</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Aggiungi la classe custom-card alla card CPU -->
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Utilizzo CPU</h5>
+                        <p class="card-text">{{ cpu_percent }}%</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <!-- Aggiungi la classe custom-card alla card RAM -->
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Utilizzo RAM</h5>
+                        <p class="card-text">{{ ram_percent }}%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <!-- Aggiungi la classe custom-card alla card Rete -->
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Utilizzo della Rete</h5>
+                        <p class="card-text">Velocità di invio: {{ net_sent_speed }} Mbit/s</p>
+                        <p class="card-text">Velocità di ricezione: {{ net_recv_speed }} Mbit/s</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <!-- Aggiungi la classe custom-card alla card Disco -->
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Utilizzo del Disco</h5>
+                        <p class="card-text">Spazio Totale: {{ disk_total }} GB</p>
+                        <p class="card-text">Spazio Utilizzato: {{ disk_used }} GB</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

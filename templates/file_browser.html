@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musucloud</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='main/favicon.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        @font-face {
+            font-family: 'Delistan';
+            src: url('/static/main/fonts/Delistan.ttf') format('truetype');
+        }
+        body { 
+            background-color: #023059;
+            color: white; 
+            font-family: 'Roboto', Arial, sans-serif;
+            font-size: 18px;
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+        h1 {
+            font-family: 'Delistan', sans-serif;
+            font-size: 130px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 40px;
+            padding: 20px;
+            margin-top: 10px; /* Aggiunto margine superiore */
+        }
+        .grid-item {
+            background-color: #3b5275;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            overflow: hidden;
+            position: relative; /* Aggiunto per la posizione relativa */
+            cursor: pointer;
+        }
+        .grid-item a {
+            color: white;
+            text-decoration: none;
+        }
+        .upload-btn, .create-folder-btn, .back-btn, .logout-btn {
+        background-color: #1e5586;
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 8px;
+        margin-bottom: 10px; /* Aggiunto margine inferiore */
+        margin-right: 10px; /* Aggiunto margine destro */
+    }
+        .create-folder-btn .fa-folder-plus {
+        font-size: 24px; /* Imposta le dimensioni dell'icona */
+        }
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: transparent;
+            border: none;
+            color: white;
+            padding: 0;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .delete-icon {
+            color: #ff5c5c;
+            font-size: 24px;
+        }
+        .float-right {
+            float: right;
+        }
+        .folder-icon,
+        .file-icon {
+            color: white;
+            font-size: 50px;
+        }
+        .download-icon {
+            color: rgb(0, 255, 34);
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        .progress {
+            margin-top: 10px;
+        }
+        .logout-btn {
+    background-color: #e63434;
+    font-size: 18px; /* Imposta il colore di sfondo su rosso */
+}
+    </style>
+</head>
+<body>
+    <h1>Musucloud</h1>
+    <div class="container-fluid mt-3"> <!-- Aggiunto margine superiore -->
+        <div class="row">
+            <div class="col-12 col-md-3">
+                <div class="d-flex justify-content-between">
+                    {% if path != '/' and path != root %}
+                        <a href="?path={{ '/'.join(path.split('/')[:-1]) }}" class="back-btn">
+                            <i class="fas fa-arrow-up folder-icon" style="font-size: 24px;"></i> 
+                        </a>
+                    {% endif %}
+                    <button type="button" class="upload-btn" data-toggle="modal" data-target="#uploadModal">
+                        Upload
+                    </button>
+                    <button type="button" class="create-folder-btn" data-toggle="modal" data-target="#createFolderModal">
+                        <i class="fas fa-folder-plus"></i> 
+                    </button>
+                    <a href="/logout" class="logout-btn">
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Upload Modal -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" style="background-color: #023059;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadModalLabel" style="color: white;">Carica un file</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" style="color: #ff5c5c;">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+                        <input type="hidden" name="path" value="{{ path }}">
+                        <div class="form-group">
+                            <input type="file" name="file" class="form-control-file rounded" id="fileUpload">
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annulla</button>
+                            <button type="submit" class="btn btn-primary">Carica</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <!-- Create Folder Modal -->
+    <div class="modal fade" id="createFolderModal" tabindex="-1" role="dialog" aria-labelledby="createFolderModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createFolderModalLabel">Crea una nuova cartella</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/create_folder" method="post" class="create-folder-form">
+                        <div class="form-group">
+                            <label for="folderName">Nome della nuova cartella:</label>
+                            <input type="text" class="form-control" id="folderName" name="folder_name" placeholder="Nome della nuova cartella" required>
+                        </div>
+                        <input type="hidden" name="path" value="{{ path }}">
+                        <button type="submit" class="btn btn-primary">Crea cartella</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="grid-container">
+        {% for directory in directories %}
+            <a href="?path={{ path }}/{{ directory }}" style="color: white;">
+                <div class="grid-item"><i class="fas fa-folder folder-icon"></i><br>{{ directory }}</div>
+            </a>
+        {% endfor %}
+        {% for file in files %}
+    <div class="grid-item">
+        <a href="{{ url_for('download_file', path=path, filename=file) }}">
+            {% if file.endswith('.txt') %}
+                <i class="fas fa-file-alt file-icon"></i><br>
+            {% elif file.endswith('.pdf') %}
+                <i class="fas fa-file-pdf file-icon"></i><br>
+            {% elif file.endswith('.doc') or file.endswith('.docx') %}
+                <i class="fas fa-file-word file-icon"></i><br>
+            {% elif file.endswith('.xls') or file.endswith('.xlsx') %}
+                <i class="fas fa-file-excel file-icon"></i><br>
+            {% elif file.endswith('.ppt') or file.endswith('.pptx') %}
+                <i class="fas fa-file-powerpoint file-icon"></i><br>
+            {% elif file.endswith('.png') or file.endswith('.jpg') or file.endswith('.jpeg') or file.endswith('.gif') %}
+                <i class="fas fa-file-image file-icon"></i><br>
+            {% elif file.endswith('.zip') or file.endswith('.rar') %}
+                <i class="fas fa-file-archive file-icon"></i><br>
+            {% elif file.endswith('.mp4') or file.endswith('.avi') or file.endswith('.MOV') or file.endswith('.mov') or file.endswith('.mkv') %}
+                <i class="fas fa-file-video file-icon"></i><br>
+            {% elif file.endswith('.py') %}
+                <i class="fas fa-file-code file-icon"></i><br>
+
+            {% else %}
+                <i class="fas fa-file file-icon"></i><br>
+            {% endif %}
+            <i class="fas fa-download download-icon"></i>{{ file }}
+        </a>
+        <form action="/delete" method="post" style="display: inline;">
+            <input type="hidden" name="filename" value="{{ file }}">
+            <input type="hidden" name="path" value="{{ path }}">
+            <button class="delete-btn" type="submit"><i class="fas fa-trash delete-icon"></i></button>
+        </form>
+    </div>
+{% endfor %}
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            let formData = new FormData(this);
+            axios.post('/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                onUploadProgress: function(progressEvent) {
+                    let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    document.querySelector('.progress-bar').style.width = percentCompleted + '%';
+                    document.querySelector('.progress-bar').setAttribute('aria-valuenow', percentCompleted);
+                }
+            }).then(function(response) {
+                console.log(response.data);
+                window.location.reload();
+            }).catch(function(error) {
+                console.error(error);
+            });
+        });
+    </script>
+</body>
+</html>
