@@ -22,13 +22,13 @@ def get_files_and_directories(path):
     return files, directories
 
 def get_resource_usage():
-    # Utilizzo della CPU
+    # Cpu Usage
     cpu_percent = psutil.cpu_percent(interval=1)
 
-    # Utilizzo della RAM
+    # RAM Usage
     ram_percent = psutil.virtual_memory().percent
     
-    # Utilizzo della rete (in byte)
+    # Network Usage (in byte)
     net_io_counters = psutil.net_io_counters()
     net_sent = net_io_counters.bytes_sent
     net_recv = net_io_counters.bytes_recv
@@ -37,15 +37,14 @@ def get_resource_usage():
     net_sent_now = net_io_counters.bytes_sent
     net_recv_now = net_io_counters.bytes_recv
 
-    # Calcolo dei Mbit/s
+    # Mbit/s
     net_sent_speed = round(((net_sent_now - net_sent) * 8) / (1024 * 1024), 2)
     net_recv_speed = round(((net_recv_now - net_recv) * 8) / (1024 * 1024), 2)
     
-    # Utilizzo del disco (in byte)
+    # Disk Usage
     disk_usage = psutil.disk_usage('/')
-    disk_total = round(disk_usage.total / (1024 ** 3), 2)  # Conversione in GB e arrotondamento a due cifre decimali
-    disk_used = round(disk_usage.used / (1024 ** 3), 2)  # Conversione in GB e arrotondamento a due cifre decimali
-    
+    disk_total = round(disk_usage.total / (1024 ** 3), 2)
+    disk_used = round(disk_usage.used / (1024 ** 3), 2)  
     return cpu_percent, ram_percent, net_sent_speed, net_recv_speed, disk_total, disk_used
 
 @app.route('/')
@@ -56,7 +55,7 @@ def login():
 
 @app.route('/auth', methods=['POST'])
 def auth():
-    if request.form['username'] == 'toto' and request.form['password'] == 'totosara':
+    if request.form['username'] == 'admin' and request.form['password'] == 'admin': #MODIFY USERNAME AND PASSWORD!!!
         session['username'] = request.form['username']
         return redirect(url_for('file_browser'))
     else:
@@ -72,7 +71,7 @@ def file_browser():
     if 'username' not in session:
         return redirect(url_for('login'))
     path = os.path.join(ROOT_FOLDER, request.args.get('path', ''))
-    # Impedisci la navigazione a cartelle inferiori alla cartella principale
+    # Prevent navigation to folders behind root folder
     if not os.path.realpath(path).startswith(os.path.realpath(ROOT_FOLDER)):
         return redirect(url_for('file_browser'))
     if not os.path.exists(path):
@@ -124,4 +123,4 @@ def monitor():
     return render_template('monitor.html', cpu_percent=cpu_percent, ram_percent=ram_percent, net_sent_speed=net_sent_speed, net_recv_speed=net_recv_speed, disk_total=disk_total, disk_used=disk_used)
 
 if __name__ == '__main__':
-    app.run(host='192.168.1.9', port=5000, debug=True)
+    app.run(host='yourip', port=5000, debug=True) #MODIFY WITH YOUR PC PRIVATE IP!!!!!!
