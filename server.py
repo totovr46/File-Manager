@@ -50,14 +50,14 @@ def get_resource_usage():
 @app.route('/')
 def login():
     if 'username' in session:
-        return redirect(url_for('file_browser'))
+        return redirect(url_for('file_manager'))
     return render_template('login.html')
 
 @app.route('/auth', methods=['POST'])
 def auth():
     if request.form['username'] == 'admin' and request.form['password'] == 'admin': #MODIFY USERNAME AND PASSWORD!!!
         session['username'] = request.form['username']
-        return redirect(url_for('file_browser'))
+        return redirect(url_for('file_manager'))
     else:
         return render_template('login.html', error='Credenziali errate')
 
@@ -66,18 +66,18 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('login'))
 
-@app.route('/file_browser')
-def file_browser():
+@app.route('/file_manager')
+def file_manager():
     if 'username' not in session:
         return redirect(url_for('login'))
     path = os.path.join(ROOT_FOLDER, request.args.get('path', ''))
     # Prevent navigation to folders behind root folder
     if not os.path.realpath(path).startswith(os.path.realpath(ROOT_FOLDER)):
-        return redirect(url_for('file_browser'))
+        return redirect(url_for('file_manager'))
     if not os.path.exists(path):
         os.makedirs(path)
     files, directories = get_files_and_directories(path)
-    return render_template('file_browser.html', files=files, directories=directories, path=path, root=ROOT_FOLDER)
+    return render_template('file_manager.html', files=files, directories=directories, path=path, root=ROOT_FOLDER)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -89,7 +89,7 @@ def upload_file():
             filename = file.filename
             upload_path = os.path.join(app.config['UPLOAD_FOLDER'], request.form['path'], filename)
             file.save(upload_path)
-    return redirect(url_for('file_browser', path=request.form['path']))
+    return redirect(url_for('file_manager', path=request.form['path']))
 
 @app.route('/download/<path:filename>', methods=['GET'])
 def download_file(filename):
@@ -104,7 +104,7 @@ def create_folder():
         return redirect(url_for('login'))
     path = os.path.join(ROOT_FOLDER, request.form['path'], request.form['folder_name'])
     os.makedirs(path)
-    return redirect(url_for('file_browser', path=request.form['path']))
+    return redirect(url_for('file_manager', path=request.form['path']))
 
 @app.route('/delete', methods=['POST'])
 def delete_file():
@@ -113,7 +113,7 @@ def delete_file():
     filename = request.form['filename']
     path = os.path.join(ROOT_FOLDER, request.form['path'], filename)
     os.remove(path)
-    return redirect(url_for('file_browser', path=request.form['path']))
+    return redirect(url_for('file_manager', path=request.form['path']))
 
 @app.route('/monitor')
 def monitor():
