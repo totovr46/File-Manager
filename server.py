@@ -121,4 +121,4 @@ def monitor():
     return render_template('monitor.html', cpu_percent=cpu_percent, ram_percent=ram_percent, net_sent_speed=net_sent_speed, net_recv_speed=net_recv_speed, disk_total=disk_total, disk_used=disk_used)
 
 if __name__ == '__main__':
-    app.run(host='yourip', port=5000, debug=True) #MODIFY WITH YOUR PC PRIVATE IP!!!!!!
+    app.run(host='127.0.0.1', port=5000, debug=True) #MODIFY WITH YOUR PC PRIVATE IP!!!!!!
