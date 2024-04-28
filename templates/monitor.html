@@ -45,19 +45,19 @@
         <div class="row">
             <div class="col-md-6">
                 <!-- Aggiungi la classe custom-card alla card CPU -->
-                <div class="card custom-card">
+                <div class="card custom-card" id="cpu_card">
                     <div class="card-body">
                         <h5 class="card-title">CPU Usage</h5>
-                        <p class="card-text">{{ cpu_percent }}%</p>
+                        <p class="card-text" id="cpu_percent"></p>
                     </div>
                 </div>
             </div>
             <div class="col-md-6">
                 <!-- Aggiungi la classe custom-card alla card RAM -->
-                <div class="card custom-card">
+                <div class="card custom-card" id="ram_card">
                     <div class="card-body">
                         <h5 class="card-title">RAM Usage</h5>
-                        <p class="card-text">{{ ram_percent }}%</p>
+                        <p class="card-text" id="ram_percent"></p>
                     </div>
                 </div>
             </div>
@@ -65,25 +65,47 @@
         <div class="row mt-3">
             <div class="col-md-6">
                 <!-- Aggiungi la classe custom-card alla card Rete -->
-                <div class="card custom-card">
+                <div class="card custom-card" id="network_card">
                     <div class="card-body">
-                        <h5 class="card-title">Net Usage</h5>
-                        <p class="card-text">Velocità di invio: {{ net_sent_speed }} Mbit/s</p>
-                        <p class="card-text">Velocità di ricezione: {{ net_recv_speed }} Mbit/s</p>
+                        <h5 class="card-title">Network Usage</h5>
+                        <p class="card-text" id="net_sent_speed"></p>
+                        <p class="card-text" id="net_recv_speed"></p>
                     </div>
                 </div>
             </div>
             <div class="col-md-6">
                 <!-- Aggiungi la classe custom-card alla card Disco -->
-                <div class="card custom-card">
+                <div class="card custom-card" id="disk_card">
                     <div class="card-body">
                         <h5 class="card-title">Disk Usage</h5>
-                        <p class="card-text">Spazio Totale: {{ disk_total }} GB</p>
-                        <p class="card-text">Spazio Utilizzato: {{ disk_used }} GB</p>
+                        <p class="card-text" id="disk_used"></p>
+                        <p class="card-text" id="disk_total"></p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            function updateMonitorData() {
+                $.ajax({
+                    url: "/monitor_data",
+                    type: "GET",
+                    success: function(data) {
+                        $("#cpu_percent").text(data.cpu_percent + "%");
+                        $("#ram_percent").text(data.ram_percent + "%");
+                        $("#net_sent_speed").text("Upload Speed: " + data.net_sent_speed + " Mbit/s");
+                        $("#net_recv_speed").text("Download Speed: " + data.net_recv_speed + " Mbit/s");
+                        $("#disk_used").text("Used: " + data.disk_used + " GB");
+                        $("#disk_total").text("Total: " + data.disk_total + " GB");
+                    }
+                });
+            }
+            setInterval(updateMonitorData, 1000);
+            // Aggiungere la chiamata a updateMonitorData all'avvio della pagina per visualizzare i dati immediatamente
+            updateMonitorData();
+        });
+    </script>
 </body>
 </html>
