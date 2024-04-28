@@ -28,7 +28,7 @@ def get_resource_usage():
     # RAM Usage
     ram_percent = psutil.virtual_memory().percent
     
-    # Network Usage (in byte)
+    # Network Usage
     net_io_counters = psutil.net_io_counters()
     net_sent = net_io_counters.bytes_sent
     net_recv = net_io_counters.bytes_recv
@@ -40,10 +40,10 @@ def get_resource_usage():
     # Mbit/s
     net_sent_speed = round(((net_sent_now - net_sent) * 8) / (1024 * 1024), 2)
     net_recv_speed = round(((net_recv_now - net_recv) * 8) / (1024 * 1024), 2)
-    # Utilizzo del disco (in byte)
+    # Disk Usage
     disk_usage = psutil.disk_usage('/')
-    disk_total = round(disk_usage.total / (1024 ** 3), 2)  # Conversione in GB e arrotondamento a due cifre decimali
-    disk_used = round(disk_usage.used / (1024 ** 3), 2)  # Conversione in GB e arrotondamento a due cifre decimali
+    disk_total = round(disk_usage.total / (1024 ** 3), 2)  
+    disk_used = round(disk_usage.used / (1024 ** 3), 2)  
     
     return cpu_percent, ram_percent, net_sent_speed, net_recv_speed, disk_total, disk_used
 
