@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory, session
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory, session, jsonify
 import os
 import psutil
-import time 
-
+import time
+import shutil
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
@@ -40,11 +40,11 @@ def get_resource_usage():
     # Mbit/s
     net_sent_speed = round(((net_sent_now - net_sent) * 8) / (1024 * 1024), 2)
     net_recv_speed = round(((net_recv_now - net_recv) * 8) / (1024 * 1024), 2)
-    
-    # Disk Usage
+    # Utilizzo del disco (in byte)
     disk_usage = psutil.disk_usage('/')
-    disk_total = round(disk_usage.total / (1024 ** 3), 2)
-    disk_used = round(disk_usage.used / (1024 ** 3), 2)  
+    disk_total = round(disk_usage.total / (1024 ** 3), 2)  # Conversione in GB e arrotondamento a due cifre decimali
+    disk_used = round(disk_usage.used / (1024 ** 3), 2)  # Conversione in GB e arrotondamento a due cifre decimali
+    
     return cpu_percent, ram_percent, net_sent_speed, net_recv_speed, disk_total, disk_used
 
 @app.route('/')
@@ -113,12 +113,31 @@ def delete_file():
     filename = request.form['filename']
     path = os.path.join(ROOT_FOLDER, request.form['path'], filename)
     os.remove(path)
-    return redirect(url_for('file_manager', path=request.form['path']))
+    return redirect(url_for('file_browser', path=request.form['path']))
+
+@app.route('/delete_folder', methods=['POST'])
+def delete_folder():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    foldername = request.form['foldername']
+    path = os.path.join(ROOT_FOLDER, request.form['path'], foldername)
+    shutil.rmtree(path)
+    return redirect(url_for('file_browser', path=request.form['path']))
 
 @app.route('/monitor')
 def monitor():
-    cpu_percent, ram_percent, net_sent_speed, net_recv_speed, disk_total, disk_used = get_resource_usage()
-    return render_template('monitor.html', cpu_percent=cpu_percent, ram_percent=ram_percent, net_sent_speed=net_sent_speed, net_recv_speed=net_recv_speed, disk_total=disk_total, disk_used=disk_used)
+    return render_template('monitor.html')
 
+@app.route('/monitor_data')
+def monitor_data():
+    cpu_percent, ram_percent, net_sent_speed, net_recv_speed, disk_total, disk_used = get_resource_usage()
+    return jsonify({
+        'cpu_percent': cpu_percent,
+        'ram_percent': ram_percent,
+        'net_sent_speed': net_sent_speed,
+        'net_recv_speed': net_recv_speed,
+        'disk_total': disk_total,
+        'disk_used': disk_used
+    })
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True) #MODIFY WITH YOUR PC PRIVATE IP!!!!!!
